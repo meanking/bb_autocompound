@@ -5,6 +5,10 @@ module.exports = async function ({ ethers, getNamedAccounts, deployments, getCha
   await deploy("VaultChef", {
     from: deployer,
     log: true,
+    args: [
+      'BB VaultChef',
+      'BBBaseXToken'
+    ],
     deterministicDeployment: false,
   })
 }

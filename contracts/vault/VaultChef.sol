@@ -3,13 +3,14 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "../interfaces/IStrategy.sol";
 import "./Operators.sol";
 
-contract VaultChef is Ownable, ReentrancyGuard, Operators {
+contract VaultChef is Ownable, ReentrancyGuard, Operators, ERC20 {
     using SafeERC20 for IERC20;
 
     // Info of each user.
@@ -31,6 +32,12 @@ contract VaultChef is Ownable, ReentrancyGuard, Operators {
     event Withdraw(address indexed user, uint256 indexed pid, uint256 amount);
     event ResetAllowance(address indexed user);
     event ResetSingleAllowance(address indexed user, uint256 indexed pid);
+    
+    constructor(
+        string memory _name,
+        string memory _symbol
+    ) ERC20(_name, _symbol) {
+    }
 
     function poolLength() external view returns (uint256) {
         return poolInfo.length;
@@ -53,6 +60,7 @@ contract VaultChef is Ownable, ReentrancyGuard, Operators {
     // Want tokens moved from user -> this -> Strat (compounding)
     function deposit(uint256 _pid, uint256 _wantAmt) external nonReentrant {
         _deposit(_pid, _wantAmt, msg.sender);
+        _mint(msg.sender, _wantAmt);
     }
 
     // For unique contract calls
@@ -89,6 +97,7 @@ contract VaultChef is Ownable, ReentrancyGuard, Operators {
     // Withdraw LP tokens from MasterChef.
     function withdraw(uint256 _pid, uint256 _wantAmt) external nonReentrant {
         _withdraw(_pid, _wantAmt, msg.sender);
+        _burn(msg.sender, _wantAmt);
     }
 
     // For unique contract calls

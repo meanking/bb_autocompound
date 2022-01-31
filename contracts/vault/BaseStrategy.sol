@@ -9,7 +9,6 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 import "../interfaces/IUniPair.sol";
 import "../interfaces/IUniRouter02.sol";
-import "../interfaces/IStrategyBBank.sol";
 
 abstract contract BaseStrategy is Ownable, ReentrancyGuard, Pausable {
     using SafeERC20 for IERC20;
@@ -17,11 +16,10 @@ abstract contract BaseStrategy is Ownable, ReentrancyGuard, Pausable {
     address public wantAddress;
     address public token0Address;
     address public token1Address;
-    address public earnedAddress;
+    address public gainedAddress;
 
     address public uniRouterAddress;
-    address public constant bbankAddress = 0xF4b5470523cCD314C6B9dA041076e7D79E0Df267;
-    address public rewardAddress;
+    address public constant bbankAddress = 0x63F7B7D85F9B02aD94c93A138a5b7508937b5942;
     address public withdrawFeeAddress;
     address public feeAddress;
     address public vaultChefAddress;
@@ -44,12 +42,12 @@ abstract contract BaseStrategy is Ownable, ReentrancyGuard, Pausable {
     uint256 public slippageFactor = 950; // 5% default slippage tolerance
     uint256 public constant slippageFactorUL = 995;
 
-    address[] public earnedToWmaticPath;
-    address[] public earnedToBBankPath;
-    address[] public earnedToToken0Path;
-    address[] public earnedToToken1Path;
-    address[] public token0ToEarnedPath;
-    address[] public token1ToEarnedPath;
+    address[] public gainedToWmaticPath;
+    address[] public gainedToBBankPath;
+    address[] public gainedToToken0Path;
+    address[] public gainedToToken1Path;
+    address[] public token0ToGainedPath;
+    address[] public token1ToGainedPath;
 
     event SetSettings(
         uint256 _controllerFee,
@@ -144,57 +142,36 @@ abstract contract BaseStrategy is Ownable, ReentrancyGuard, Pausable {
         return sharesRemoved;
     }
 
-    function distributeFees(uint256 _earnedAmt) internal returns (uint256) {
+    function distributeFees(uint256 _gainedAmt) internal returns (uint256) {
         if (controllerFee > 0) {
-            uint256 fee = _earnedAmt * controllerFee / feeMax;
+            uint256 fee = _gainedAmt * controllerFee / feeMax;
 
             _safeSwapWmatic(
                 fee,
-                earnedToWmaticPath,
+                gainedToWmaticPath,
                 feeAddress
             );
 
-            _earnedAmt = _earnedAmt - fee;
+            _gainedAmt = _gainedAmt - fee;
         }
 
-        return _earnedAmt;
+        return _gainedAmt;
     }
 
-    function distributeRewards(uint256 _earnedAmt) internal returns (uint256) {
-        if (rewardRate > 0) {
-            uint256 fee = _earnedAmt * rewardRate / feeMax;
-            
-            uint256 bbankBefore = IERC20(bbankAddress).balanceOf(address(this));
-
-            _safeSwap(
-                fee,
-                earnedToBBankPath,
-                address(this)
-            );
-            
-            uint256 bbankAfter = IERC20(bbankAddress).balanceOf(address(this)) - bbankBefore;
-            IStrategyBBank(rewardAddress).depositReward(bbankAfter);
-
-            _earnedAmt = _earnedAmt - fee;
-        }
-
-        return _earnedAmt;
-    }
-
-    function buyBack(uint256 _earnedAmt) internal virtual returns (uint256) {
+    function buyBack(uint256 _gainedAmt) internal virtual returns (uint256) {
         if (buyBackRate > 0) {
-            uint256 buyBackAmt = _earnedAmt * buyBackRate / feeMax;
+            uint256 buyBackAmt = _gainedAmt * buyBackRate / feeMax;
 
             _safeSwap(
                 buyBackAmt,
-                earnedToBBankPath,
+                gainedToBBankPath,
                 buyBackAddress
             );
 
-            _earnedAmt = _earnedAmt - buyBackAmt;
+            _gainedAmt = _gainedAmt - buyBackAmt;
         }
 
-        return _earnedAmt;
+        return _gainedAmt;
     }
 
     function resetAllowances() external onlyGov {
