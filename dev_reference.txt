@@ -1,7 +1,7 @@
 Deployed VaultChef to Rinkeby
 
-https://rinkeby.etherscan.io/address/0x0ad1a1a218B7555C436adcFf567c78A990c8707a#code
+https://rinkeby.etherscan.io/address/0xa0E206B80f20FBEf05CA077a2AF9eC02d0209d9c#code
 
 Deployed StrategySushiSwap to Rinkeby
 
-https://rinkeby.etherscan.io/address/0x6c65A005eA478D966425028Ef7c0a174e05ea7B2#code
+https://rinkeby.etherscan.io/address/0xB948DcEC4b7D1976c811cbE5f1e1D0f75Ae0688F#code
