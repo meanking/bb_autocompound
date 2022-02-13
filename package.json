@@ -6,7 +6,8 @@
   "scripts": {
     "test": "npx hardhat test",
     "compile": "npx hardhat compile",
-    "rinkeby:verify": "hardhat --network rinkeby etherscan-verify --solc-input"
+    "rinkeby:verify": "hardhat --network rinkeby etherscan-verify --solc-input",
+    "mumbai:verify": "hardhat --network mumbai etherscan-verify --solc-input"
   },
   "author": "Daniel Gaw",
   "license": "ISC",

@@ -55,10 +55,32 @@ module.exports = {
       tags: ["staging"],
       gasPrice: 5000000000,
       gasMultiplier: 2
+    },
+    matic: {
+      url: `https://polygon-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`,
+      accounts: [`0x${process.env.PRIVATE_KEY}`],
+      chainId: 137,
+      live: false,
+      saveDeployments: true,
+      tags: ["staging"],
+      gas: 2100000,
+      gasPrice: 8000000000,
+      gasMultiplier: 2
+    },
+    mumbai: {
+      url: `https://polygon-mumbai.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`,
+      accounts: [`0x${process.env.PRIVATE_KEY}`],
+      chainId: 80001,
+      live: false,
+      saveDeployments: true,
+      tags: ["staging"],
+      gas: 2100000,
+      gasPrice: 8000000000,
+      gasMultiplier: 2
     }
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
+    apiKey: process.env.POLYGONSCAN_API_KEY,
   },  
   paths: {
     sources: "./contracts",
